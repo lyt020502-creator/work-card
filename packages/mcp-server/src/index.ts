@@ -167,46 +167,90 @@ server.tool(
   })
 );
 
-// ⑧ 按场景推荐最近案例
+// ⑧ 按场景推荐最近案例（解析 EXAMPLES.md 表格行，中文语义匹配）
 server.tool(
   "recommend_example",
-  "根据描述的业务场景和卡片类型，推荐最接近的 1-2 个参考案例。",
+  "接收用户的卡片需求描述，识别场景类型，推荐最接近的 1-2 个参考案例文件路径。调用此工具后再用 get_example_code 获取对应源码，禁止不经推荐直接读取所有案例。",
   {
     description: z
       .string()
-      .describe("业务场景描述，例如：用户申请代码库权限，需要审批人同意或拒绝"),
-    type: z
-      .enum(["approval", "notice", "form", "info", "unknown"])
-      .optional()
-      .describe("卡片类型（可选）"),
+      .describe("用户的卡片需求描述，用原始语言传入，例如：用户申请代码库权限，需要审批人同意或拒绝"),
   },
-  async ({ description, type }) => {
-    const index = readFile(EXAMPLES_MD);
-    const examples = listHtmlExamples();
+  async ({ description }) => {
+    const indexContent = readFile(EXAMPLES_MD);
 
-    // 简单关键词匹配
-    const keywords = description.split(/[\s，,。、]+/).filter((k) => k.length > 1);
-    const scored = examples.map((e) => {
+    // 从 EXAMPLES.md 表格中解析每一行案例的完整描述（含中文场景、关键组件等）
+    type ExampleRow = { file: string; type: string; fullText: string };
+    const rows: ExampleRow[] = [];
+    for (const line of indexContent.split("\n")) {
+      // 匹配表格数据行：以 | ` 开头
+      const match = line.match(/^\|\s*`([^`]+\.html)`\s*\|(.+)$/);
+      if (!match) continue;
+      const file = match[1].trim();
+      const rest = match[2];
+      // 提取类型字段（第一个 | 分隔的列）
+      const cols = rest.split("|").map((c) => c.trim());
+      const type = cols[0] ?? "";
+      rows.push({ file, type, fullText: line });
+    }
+
+    // 关键词提取：拆分中文词、英文词，过滤单字
+    const keywords = description
+      .split(/[\s，,。、！？!?:：(（)）\-\/\\]+/)
+      .flatMap((token) => {
+        // 中文按2字以上子串滑窗提取
+        const cjk = token.match(/[\u4e00-\u9fa5]{2,}/g) ?? [];
+        const eng = token.match(/[a-zA-Z0-9]{2,}/g) ?? [];
+        return [...cjk, ...eng, token].filter((k) => k.length >= 2);
+      })
+      .filter(Boolean);
+
+    // 类型关键词映射
+    const typeMap: Record<string, string> = {
+      审批: "审批", 同意: "审批", 拒绝: "审批", 审核: "审批",
+      通知: "通知", 告知: "通知", 提醒: "通知", 催办: "通知",
+      表单: "表单", 填写: "表单", 提交: "表单", 申请: "表单",
+      展示: "展示", 信息: "展示", 查看: "展示",
+    };
+    const detectedType = (() => {
+      for (const kw of keywords) {
+        if (typeMap[kw]) return typeMap[kw];
+      }
+      return null;
+    })();
+
+    // 打分：每个关键词命中 fullText 得 2 分，命中类型列得 5 分
+    const scored = rows.map((row) => {
       let score = 0;
       for (const kw of keywords) {
-        if (e.scene.includes(kw) || e.file.includes(kw)) score += 2;
+        if (row.fullText.includes(kw)) score += 2;
       }
-      if (type && type !== "unknown" && e.type === type) score += 3;
-      return { ...e, score };
+      if (detectedType && row.type.includes(detectedType)) score += 5;
+      return { ...row, score };
     });
 
     scored.sort((a, b) => b.score - a.score);
-    const top = scored.slice(0, 2);
+    const top = scored.slice(0, 2).filter((e) => e.score > 0);
+    const fallback = top.length === 0 ? scored.slice(0, 1) : top;
 
-    const result = top
-      .map((e) => `- ${e.file}（类型：${e.type}，场景：${e.scene}，匹配分：${e.score}）`)
-      .join("\n");
+    const lines = fallback.map(
+      (e) => `- 文件：${e.file}（类型：${e.type}，匹配分：${e.score}）\n  → 原始描述行：${e.fullText.trim()}`
+    );
 
     return {
       content: [
         {
           type: "text",
-          text: `推荐参考案例：\n\n${result}\n\n请用 get_example_code 工具获取对应文件的完整源码。`,
+          text: [
+            `识别到的卡片类型：${detectedType ?? "未知，按内容匹配"}`,
+            `匹配关键词：${keywords.join("、")}`,
+            "",
+            "推荐参考案例：",
+            ...lines,
+            "",
+            "下一步：用 get_example_code 工具传入上方文件路径，获取完整源码后再生成新卡片。",
+            "禁止跳过此步骤直接生成。",
+          ].join("\n"),
         },
       ],
     };

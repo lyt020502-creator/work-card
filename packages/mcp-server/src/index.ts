@@ -121,7 +121,7 @@ server.tool(
     const content = readFile(ICONS_MD);
     const lines = content.split("\n");
     const matched = lines.filter(
-      (line) => line.includes("|") && line.toLowerCase().includes(keyword.toLowerCase())
+      (line: string) => line.includes("|") && line.toLowerCase().includes(keyword.toLowerCase())
     );
     if (matched.length === 0) {
       return {

@@ -1,0 +1,544 @@
+/* ═══════════════════════════════════════════════════════════════
+   工作卡公共基础样式
+   提取自 work-card.tsx 的 cva 定义 + theme.css 的设计 token
+   所有案例 HTML 共用此文件，禁止在案例中重复声明以下内容
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CSS 变量（值来自 theme.css :root，原样搬运） ── */
+:root {
+  /* 品牌色 */
+  --color-brandblue-0: #F2F8FF;
+  --color-brandblue-5: #3377FF;
+  --color-brandblue-4: #5993FF;
+  --color-brandblue-6: #215BD9;
+  /* 红色 */
+  --color-red-0: #FFF2F2;
+  --color-red-5: #FF5040;
+  --color-red-4: #FF7066;
+  --color-red-6: #D93936;
+  /* 绿色 */
+  --color-green-5: #1BB23E;
+  /* 橙色 */
+  --color-orange-0: #FFF5F2;
+  --color-orange-5: #FF7733;
+  /* 灰色 */
+  --color-gray-0: #FFFFFF;
+  --color-gray-2: #C7CDD9;
+  --color-gray-4: #878D99;
+  --color-gray-6: #5C6473;
+  --color-gray-10: #11141A;
+  /* 其他色 */
+  --color-other-0: #E8E9EB;
+  --color-other-1: #DCDFE5;
+  --color-other-2: #F4F5F7;
+  --color-other-3: #F2F4F7;
+  --color-other-4: #F7F8FA;
+
+  /* 语义色 */
+  --brand-base: var(--color-brandblue-5);
+  --brand-hover: var(--color-brandblue-4);
+  --brand-active: var(--color-brandblue-6);
+  --status-error: var(--color-red-5);
+  --status-error-hover: var(--color-red-4);
+  --status-error-active: var(--color-red-6);
+  --status-success: var(--color-green-5);
+  --status-warning: var(--color-orange-5);
+  --status-neutral: #7786A3;             /* 失败/取消/失效状态，灰色卡头专用 */
+
+  /* 文本色 */
+  --text-heading: var(--color-gray-10);
+  --text-body: var(--color-gray-10);
+  --text-secondary: var(--color-gray-6);
+  --text-help: var(--color-gray-4);
+  --text-disabled: var(--color-gray-2);
+
+  /* 背景 */
+  --bg-primary: var(--color-gray-0);
+  --bg-secondary: var(--color-other-3);
+
+  /* 边框 / 分割线 */
+  --border-color: var(--color-other-1);
+  --divider-color: var(--color-other-2);
+
+  /* 圆角 */
+  --corner-sm: 4px;
+  --corner-md: 8px;
+  --corner-xl: 20px;
+  --corner-pill: 9999px;
+  --radius-xs: 2px;
+
+  /* 间距 */
+  --space-intimate: 4px;
+  --space-tight: 8px;
+  --space-content: 12px;
+  --space-group: 16px;
+
+  /* 字号 */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-lg: 15px;
+
+  /* 字重 */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+
+  /* 行高 */
+  --font-height-xs: 18px;
+  --font-height-sm: 20px;
+  --font-height-lg: 22px;
+
+  /* 阴影 */
+  --shadow-sm: 0px 2px 12px 0px rgba(17, 20, 26, 0.08);
+  --shadow-md: 0 2px 20px 0 rgba(17, 20, 26, 0.16);
+
+  /* 悬浮背景 */
+  --bg-ghost-hover: var(--color-other-4);
+
+  /* 组件高度 */
+  --comp-height-xs: 18px;
+  --comp-height-lg: 32px;
+}
+
+/* ── 全局重置 ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'PingFang SC', sans-serif;
+  background: #F0F2F5;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* ── 排版语义类（含默认颜色，案例无需内联 style） ── */
+.wc-title1 { font-size: var(--font-size-lg); font-weight: var(--font-weight-medium); line-height: var(--font-height-lg); color: var(--text-heading); }
+.wc-title2 { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); line-height: var(--font-height-sm); color: var(--text-heading); }
+.wc-text   { font-size: var(--font-size-sm); font-weight: var(--font-weight-regular); line-height: var(--font-height-sm); color: var(--text-body); }
+.wc-caption { font-size: var(--font-size-xs); font-weight: var(--font-weight-regular); line-height: var(--font-height-xs); color: var(--text-help); }
+
+/* ── WorkCard 根容器 ── */
+/* overflow 必须为 visible，避免裁剪 Select 下拉菜单；
+   border-radius 裁剪由 Header / Footer 各自承担 */
+.work-card {
+  display: flex;
+  flex-direction: column;
+  width: 324px;
+  min-width: 272px;
+  max-width: 560px;
+  border-radius: var(--corner-md);
+  border: 0.5px solid var(--border-color);
+  background: var(--bg-primary);
+  overflow: visible;
+  font-family: 'PingFang SC', sans-serif;
+}
+
+/* ── WorkCardHeader 卡头 ── */
+.work-card-header {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: var(--space-content);
+  gap: var(--space-tight);
+  flex-shrink: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-radius: var(--corner-md) var(--corner-md) 0 0;
+  color: var(--brand-base);
+  background: linear-gradient(78deg, rgba(51, 119, 255, 0.16) 38.79%, rgba(51, 119, 255, 0.10) 75.54%), var(--bg-primary, #FFF);
+}
+.work-card-header__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.work-card-header__label {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+/* ── 卡头颜色变体（对应 work-card.tsx headerBgMap） ── */
+.work-card-header--red {
+  color: var(--status-error);
+  background: linear-gradient(78deg, rgba(255, 80, 64, 0.16) 38.79%, rgba(255, 80, 64, 0.10) 75.54%), var(--bg-primary, #FFF);
+}
+.work-card-header--green {
+  color: var(--status-success);
+  background: linear-gradient(78deg, rgba(27, 178, 62, 0.16) 38.79%, rgba(27, 178, 62, 0.10) 75.54%), var(--bg-primary, #FFF);
+}
+.work-card-header--orange {
+  color: var(--status-warning);
+  background: linear-gradient(78deg, rgba(255, 119, 51, 0.16) 38.79%, rgba(255, 119, 51, 0.10) 75.54%), var(--bg-primary, #FFF);
+}
+.work-card-header--gray {
+  color: var(--status-neutral);
+  background: linear-gradient(78deg, rgba(119, 134, 163, 0.16) 38.79%, rgba(119, 134, 163, 0.10) 75.54%), var(--bg-primary, #FFF);
+}
+
+/* ── WorkCardBody 内容区 ── */
+.work-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-content) var(--space-content) 0;
+  gap: var(--space-content);
+}
+/* 内容区间距变体 —— 适中（8px） */
+.work-card-body--tight {
+  gap: var(--space-tight);
+}
+/* 内容区间距变体 —— 紧凑（4px），适用于纯文字 + 链接场景 */
+.work-card-body--intimate {
+  gap: var(--space-intimate);
+}
+
+/* ── 属性列表 (WorkCardAttrList) ── */
+.wc-attr-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px var(--space-tight);
+  align-items: baseline;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.wc-attr-item { display: contents; }
+.wc-attr-label {
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+.wc-attr-label::after { content: '：'; }
+.wc-attr-value {
+  color: var(--text-body);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.wc-attr-label--error { color: var(--status-error); }
+.wc-attr-value--error { color: var(--status-error); }
+
+/* ── 分割线 ── */
+.wc-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--divider-color);
+}
+
+/* ── 表单字段组 (WorkCardFormGroup) ── */
+.wc-form-group {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-tight) var(--space-tight);
+  align-items: center;
+  font-size: 13px;
+}
+.wc-form-field { display: contents; }
+.wc-field-label {
+  white-space: nowrap;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+/* ── 工作卡内基础控件样式 ── */
+.wc-input,
+.wc-select-trigger,
+.wc-textarea,
+.wc-select-option,
+.wc-btn {
+  font-family: 'PingFang SC', sans-serif;
+}
+
+.wc-input,
+.wc-select-trigger,
+.wc-textarea {
+  background: var(--bg-primary);
+  color: var(--text-heading);
+  outline: none;
+  border: 1px solid var(--color-other-0);
+  transition: border-color 150ms;
+}
+
+.wc-input,
+.wc-select-trigger,
+.wc-textarea,
+.wc-select-option {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.wc-input::placeholder,
+.wc-textarea::placeholder {
+  color: var(--text-disabled);
+  font-weight: 400;
+}
+
+.wc-input:hover,
+.wc-input:focus,
+.wc-textarea:hover,
+.wc-textarea:focus {
+  border-color: var(--brand-base);
+}
+
+/* ── 工作卡内 Input（pill 圆角） ── */
+.wc-input {
+  width: 100%;
+  height: var(--comp-height-lg);
+  padding: 0 var(--space-content);
+  border-radius: var(--corner-pill);
+}
+.wc-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.wc-input:disabled:hover { border-color: var(--color-other-0); }
+
+/* ── 自定义 Select 容器 ── */
+.wc-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Select 触发器 ── */
+.wc-select-trigger {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-tight);
+  width: 100%;
+  height: var(--comp-height-lg);
+  padding: 0 var(--space-content);
+  border-radius: var(--corner-pill);
+  cursor: pointer;
+  user-select: none;
+}
+.wc-select-trigger:hover,
+.wc-select-trigger.is-open {
+  border-color: var(--brand-base);
+}
+.wc-select-trigger.is-disabled {
+  background: var(--bg-secondary);
+  border-color: var(--color-other-0);
+  cursor: not-allowed;
+}
+.wc-select-trigger.is-disabled:hover {
+  border-color: var(--color-other-0);
+}
+
+/* 触发器内部 — 文字区域 */
+.wc-select-trigger__text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 20px;
+}
+.wc-select-trigger__text.is-placeholder {
+  color: var(--text-disabled);
+}
+
+/* 触发器内部 — 箭头图标 */
+.wc-select-trigger__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  color: var(--text-help);
+  transition: transform 150ms;
+}
+.wc-select-trigger.is-open .wc-select-trigger__arrow {
+  transform: rotate(180deg);
+}
+
+/* ── Select 下拉面板 ── */
+.wc-select-dropdown {
+  position: absolute;
+  z-index: 50;
+  left: 0;
+  margin-top: 2px;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border: 1px solid var(--color-other-0);
+  border-radius: var(--corner-sm);
+  box-shadow: var(--shadow-md);
+  padding: 4px 0;
+  display: none;
+}
+.wc-select-wrapper.is-open .wc-select-dropdown {
+  display: block;
+}
+
+/* ── Select 选项 ── */
+.wc-select-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-group);
+  height: var(--comp-height-lg);
+  color: var(--text-heading);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 100ms;
+}
+.wc-select-option:hover {
+  background: var(--bg-ghost-hover);
+}
+.wc-select-option.is-selected {
+  color: var(--brand-base);
+}
+.wc-select-option.is-disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+.wc-select-option.is-disabled:hover {
+  background: transparent;
+}
+
+/* ── 工作卡内 Textarea ── */
+.wc-textarea {
+  width: 100%;
+  padding: 6px var(--space-tight);
+  border-radius: var(--corner-md);
+  resize: none;
+}
+
+/* ── 按钮操作区 (WorkCardActions) ── */
+.wc-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-tight);
+}
+.wc-actions--fill > .wc-btn { flex: 1; }
+
+/* ── Button — outline / outline-primary / outline-destructive（完整四态） ── */
+.wc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 65px;
+  padding: 0 18px;
+  border-radius: var(--corner-pill);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: var(--font-height-xs);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+}
+
+/* outline（次要按钮）默认 / hover / active / disabled */
+.wc-btn--outline {
+  background: var(--bg-primary);
+  color: var(--text-heading);
+  border: 1px solid var(--color-gray-2);
+}
+.wc-btn--outline:hover {
+  background: var(--bg-secondary);
+}
+.wc-btn--outline:active {
+  background: var(--color-other-0);
+}
+
+/* outline-primary 默认 / hover / active / disabled */
+.wc-btn--outline-primary {
+  background: var(--bg-primary);
+  color: var(--brand-base);
+  border: 1px solid var(--brand-base);
+}
+.wc-btn--outline-primary:hover {
+  background: rgba(51, 119, 255, 0.10);
+}
+.wc-btn--outline-primary:active {
+  background: rgba(51, 119, 255, 0.30);
+}
+
+/* outline-destructive 默认 / hover / active / disabled */
+.wc-btn--outline-destructive {
+  background: var(--bg-primary);
+  color: var(--status-error);
+  border: 1px solid var(--status-error);
+}
+.wc-btn--outline-destructive:hover {
+  background: rgba(255, 80, 64, 0.10);
+}
+.wc-btn--outline-destructive:active {
+  background: rgba(255, 80, 64, 0.30);
+}
+
+/* 共享 disabled 态 */
+.wc-btn--outline:disabled,
+.wc-btn--outline-primary:disabled,
+.wc-btn--outline-destructive:disabled {
+  opacity: 0.40;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ── 提示信息区域 (.wc-tip) ──
+   图标规范：统一使用 大模型-提示（components/icons/大模型提示.tsx）
+   SVG 尺寸 16×16，viewBox 0 0 48 48，fill="currentColor"
+   颜色继承自 .wc-tip 的 color: var(--text-help)
+── */
+.wc-tip {
+  display: flex;
+  gap: var(--space-intimate);
+  font-size: var(--font-size-xs);
+  line-height: var(--font-height-xs);
+  color: var(--text-help);
+}
+.wc-tip__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+.wc-tip__text {
+  flex: 1;
+}
+.wc-tip__link {
+  color: var(--brand-base);
+  cursor: pointer;
+}
+
+/* ── WorkCardFooter 底部品牌区（固定模板） ── */
+.work-card-footer {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-content) var(--space-content) 0;
+  border-radius: 0 0 var(--corner-md) var(--corner-md);
+  overflow: hidden;
+}
+.work-card-footer__divider {
+  width: 100%;
+  height: 1px;
+  background: var(--divider-color);
+}
+.work-card-footer__brand {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+.work-card-footer__brand-inner {
+  display: inline-flex;
+  align-items: center;
+  height: 12px;
+}
+.work-card-footer__brand-svg {
+  width: 73px;
+  height: 12px;
+  flex-shrink: 0;
+}

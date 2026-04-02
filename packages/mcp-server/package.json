@@ -1,0 +1,20 @@
+{
+  "name": "@work-card/mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "work-card-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "node --watch --experimental-strip-types src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

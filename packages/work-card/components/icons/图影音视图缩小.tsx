@@ -1,0 +1,42 @@
+import * as React from "react";
+import type { IconProps } from "./types";
+
+// ── 图影音-视图缩小 ──────────────────────────────────────────
+// 来源：icon/图影音-视图缩小.svg
+export const 图影音视图缩小 = React.forwardRef<SVGSVGElement, IconProps>(
+  function 图影音视图缩小({ size = 48, className, style, ...props }, ref) {
+    const uid = React.useId();
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={className}
+        style={style}
+        ref={ref}
+        {...props}
+      >
+        <mask
+          id={`mask0_31_6500-${uid}`}
+          style={{ maskType: "alpha" } as React.CSSProperties}
+          maskUnits="userSpaceOnUse"
+          x="0"
+          y="0"
+          width="48"
+          height="48"
+        >
+          <rect x="48" width="48" height="48" transform="rotate(90 48 0)" fill="#FF0606" />
+        </mask>
+        <g mask={`url(#mask0_31_6500-${uid})`}>
+          <path
+            d="M22.999 4.41479C33.2633 4.41479 41.5848 12.7355 41.585 22.9998C41.585 27.5917 39.9179 31.7938 37.1582 35.0369L42.0605 39.9392C42.646 40.5249 42.646 41.4746 42.0605 42.0603C41.4748 42.6461 40.5243 42.6461 39.9385 42.0603L35.0371 37.1589C31.794 39.9189 27.5912 41.5857 22.999 41.5857C12.7348 41.5856 4.41406 33.264 4.41406 22.9998C4.4142 12.7356 12.7349 4.41494 22.999 4.41479ZM22.999 7.58569C14.4859 7.58583 7.5851 14.4866 7.58496 22.9998C7.58496 31.513 14.4858 38.4147 22.999 38.4148C31.5124 38.4148 38.4141 31.5131 38.4141 22.9998C38.4139 14.4865 31.5123 7.58569 22.999 7.58569ZM30 21.4998C30.8281 21.5 31.4999 22.1716 31.5 22.9998C31.5 23.828 30.8282 24.4995 30 24.4998H16C15.1716 24.4998 14.5 23.8282 14.5 22.9998C14.5001 22.1714 15.1717 21.4998 16 21.4998H30Z"
+            fill="currentColor"
+          />
+        </g>
+      </svg>
+    );
+  }
+);
+图影音视图缩小.displayName = "图影音视图缩小";

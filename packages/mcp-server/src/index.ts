@@ -7,8 +7,11 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// packages/mcp-server/src → packages/work-card
-const LIB_ROOT = path.resolve(__dirname, "../../work-card");
+// 发布后：dist/index.js → ../data/；本地开发：src/index.ts → ../../work-card/
+const DATA_DIR = path.resolve(__dirname, "../data");
+const LIB_ROOT = fs.existsSync(DATA_DIR)
+  ? DATA_DIR
+  : path.resolve(__dirname, "../../work-card");
 const EXAMPLES_DIR = path.join(LIB_ROOT, "components/work-card-examples");
 const ICONS_MD = path.join(LIB_ROOT, "components/icons/ICON_LIST.md");
 const EXAMPLES_MD = path.join(EXAMPLES_DIR, "EXAMPLES.md");

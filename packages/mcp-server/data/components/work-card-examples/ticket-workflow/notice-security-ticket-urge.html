@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>工作卡 - 收到催办</title>
+<link rel="stylesheet" href="../shared/work-card-base.css" />
+<style>
+  /* ── 本案例特有样式 ── */
+
+  /* 正文描述（含高亮数字） */
+  .wc-urge-desc {
+    font-size: var(--font-size-sm);
+    line-height: var(--font-height-sm);
+    color: var(--text-secondary);
+  }
+  .wc-urge-desc__count {
+    font-weight: var(--font-weight-medium);
+    color: var(--status-error);
+  }
+
+  /* 催办人行 */
+  .wc-urge-sender {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tight);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-height-sm);
+    color: var(--text-body);
+  }
+  .wc-urge-sender__label {
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .wc-urge-sender__label::after {
+    content: '：';
+  }
+  .wc-urge-sender__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--bg-secondary);
+  }
+  .wc-urge-sender__name {
+    color: var(--text-body);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     工作卡：收到催办
+     类型：通知类 | 图标：IconNotice | 卡头色：red
+     组件：标题 + 描述文字（高亮数字）+ 催办人（头像 + 姓名） + Actions(fill) + 分割线 + 提示文字
+     ════════════════════════════════════════════════════════════ -->
+<div class="work-card">
+
+  <!-- ── WorkCardHeader ── -->
+  <div class="work-card-header work-card-header--red">
+    <span class="work-card-header__icon">
+      <!-- IconNotice（喇叭/通知）— 来自 work-card.tsx -->
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="14.2352" y="9.4502" width="4.36173" height="1.30852" rx="0.654259" fill="currentColor"/>
+        <rect x="14.2003" y="5.3501" width="4.36173" height="1.30852" rx="0.654259" transform="rotate(-30 14.2003 5.3501)" fill="currentColor"/>
+        <rect width="4.36173" height="1.30852" rx="0.654259" transform="matrix(-0.866025 -0.5 -0.5 0.866025 18.6318 15.9053)" fill="currentColor"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.81627 5.95679C2.01647 5.95679 1.3681 6.60516 1.3681 7.40495V12.5953C1.3681 13.3951 2.01647 14.0434 2.81627 14.0434H5.07558V5.95679H2.81627ZM5.94793 5.94133V14.0589C5.97896 14.0683 6.00875 14.0818 6.03643 14.0993L10.4982 16.9141C11.2214 17.3704 12.1638 16.8507 12.1638 15.9955V4.00462C12.1638 3.14948 11.2214 2.62974 10.4982 3.08604L6.03643 5.90094C6.00875 5.91841 5.97896 5.93196 5.94793 5.94133Z" fill="currentColor"/>
+      </svg>
+    </span>
+    <span class="work-card-header__label">安全工单通知</span>
+  </div>
+
+  <!-- ── WorkCardBody ── -->
+  <div class="work-card-body">
+
+    <!-- 主标题 -->
+    <h3 class="wc-title1">胡飞 提醒你处理安全工单</h3>
+
+    <!-- 描述文字（含高亮数字） -->
+    <p class="wc-urge-desc">你有 <span class="wc-urge-desc__count">2</span> 个安全漏洞即将超期，<span class="wc-urge-desc__count">1</span> 个安全工单已超期未处理，请尽快安排处理。</p>
+
+    <!-- 催办人 -->
+    <div class="wc-urge-sender">
+      <span class="wc-urge-sender__label">催办人</span>
+      <div class="wc-urge-sender__avatar"></div>
+      <span class="wc-urge-sender__name">胡飞</span>
+    </div>
+
+    <!-- 立即处理（全宽主要按钮） -->
+    <div class="wc-actions wc-actions--fill">
+      <button class="wc-btn wc-btn--outline-primary">立即处理</button>
+    </div>
+
+    <!-- 分割线 -->
+    <div class="wc-divider"></div>
+
+    <!-- 提示信息 -->
+    <div class="wc-tip">
+      <span class="wc-tip__icon">
+        <!-- 大模型提示（感叹号圆形）— 来自 components/icons -->
+        <svg width="16" height="16" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <mask id="mask0-tip" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48">
+            <rect x="48" width="48" height="48" transform="rotate(90 48 0)" fill="#FF0606"/>
+          </mask>
+          <g mask="url(#mask0-tip)">
+            <path d="M24 4.5C34.7696 4.5 43.5 13.2304 43.5 24C43.5 34.7696 34.7696 43.5 24 43.5C13.2304 43.5 4.5 34.7696 4.5 24C4.5 13.2304 13.2304 4.5 24 4.5ZM24 7.5C14.8873 7.5 7.5 14.8873 7.5 24C7.5 33.1127 14.8873 40.5 24 40.5C33.1127 40.5 40.5 33.1127 40.5 24C40.5 14.8873 33.1127 7.5 24 7.5ZM24 31C24.8284 31 25.5 31.6716 25.5 32.5V33.5C25.5 34.3284 24.8284 35 24 35C23.1716 35 22.5 34.3284 22.5 33.5V32.5C22.5 31.6716 23.1716 31 24 31ZM24 13C24.8284 13 25.5 13.6716 25.5 14.5V26.5C25.5 27.3284 24.8284 28 24 28C23.1716 28 22.5 27.3284 22.5 26.5V14.5C22.5 13.6716 23.1716 13 24 13Z" fill="currentColor"/>
+          </g>
+        </svg>
+      </span>
+      <span class="wc-tip__text">如需帮助请联系💁 <span class="wc-tip__link">【百度安全响应中心】</span></span>
+    </div>
+
+  </div>
+
+  <!-- ── WorkCardFooter 底部品牌区（固定模板，禁止修改） ── -->
+  <div class="work-card-footer">
+    <div class="work-card-footer__divider"></div>
+    <div class="work-card-footer__brand">
+      <span class="work-card-footer__brand-inner">
+        <svg class="work-card-footer__brand-svg" width="73" height="12" viewBox="0 0 73 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_5427_7552)">
+          <path d="M2.61816 0.990477C2.81315 0.496794 3.35844 0.235169 3.875 0.368407L3.98535 0.402586L10.6553 2.89184C11.1669 3.08284 11.442 3.61506 11.3076 4.11743L11.2705 4.22778L9.27441 9.28247V11.1047C9.27437 11.4146 9.01523 11.666 8.69531 11.6663H0.580078C0.259967 11.6663 3.98427e-05 11.4147 0 11.1047V4.4104C0 4.10037 0.259943 3.84888 0.580078 3.84888H1.48828L2.61816 0.990477ZM0.96582 10.7297H8.30762V9.12524L8.30176 9.12329L8.30762 9.10766V4.78442H0.96582V10.7297ZM4.92578 8.31567C5.08585 8.31567 5.21582 8.44564 5.21582 8.60571V8.96216C5.21562 9.12206 5.08573 9.25122 4.92578 9.25122H3.1875C3.02755 9.25122 2.89766 9.12206 2.89746 8.96216V8.60571C2.89746 8.44564 3.02743 8.31567 3.1875 8.31567H4.92578ZM6.08594 6.36059C6.2458 6.36084 6.375 6.49071 6.375 6.65063V7.0061C6.375 7.16602 6.2458 7.2959 6.08594 7.29614H3.1875C3.02743 7.29614 2.89746 7.16617 2.89746 7.0061V6.65063C2.89746 6.49056 3.02743 6.36059 3.1875 6.36059H6.08594ZM3.64355 1.27661C3.60641 1.26275 3.566 1.27314 3.54004 1.29907L3.51953 1.33032L2.52539 3.84888H8.69531C9.01525 3.8491 9.27441 4.10051 9.27441 4.4104V6.65942L10.3691 3.88696L10.376 3.85083C10.375 3.82653 10.3638 3.80326 10.3457 3.78638L10.3135 3.76587L3.64355 1.27661Z" fill="#508AFF"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M40.4393 1.58154L40.4152 2.49977H49.4112L49.4702 1.58154H40.4393Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M44.3618 2.49866L43.692 10.0653H44.8286L45.5013 2.49866H44.3618Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M39.2141 10.0647L39.1206 11.0038H49.316L49.4095 10.0647H39.2141Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M51.9947 4.01344L51.3215 11.5579H52.3802L53.1434 2.25049L51.9947 4.01344Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M52.989 0.932617C52.989 0.932617 52.1353 3.31622 50.489 4.29665C50.4932 4.29329 50.4296 5.29344 50.4296 5.29344C50.4296 5.29344 52.6855 4.72221 54.1309 0.932617C54.1296 0.936223 52.989 0.932617 52.989 0.932617Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M55.6802 0.932617C55.6802 0.932617 54.8986 3.26686 53.295 4.12793C53.2989 4.12473 53.2385 5.07473 53.2385 5.07473C53.2385 5.07473 55.463 4.31801 56.7542 0.932617C56.7529 0.936042 55.6802 0.932617 55.6802 0.932617Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M55.6804 2.87267H61.1249L61.1881 2.08167H56.1137L55.6804 2.87267Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M56.5404 2.8728L55.8019 11.5584H56.7767L57.5051 2.8728H56.5404Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M57.2147 5.05408H60.3284L60.244 5.90873H57.1082L57.2147 5.05408Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M66.8923 2.50854H70.3341L70.2496 3.3632H66.7858L66.8923 2.50854Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M61.7352 5.06738H72.0349L71.9505 5.92204H61.6287L61.7352 5.06738Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M56.8735 8.03528H60.47L60.3856 8.88993H56.767L56.8735 8.03528Z" fill="#878D99"/>
+          <path d="M66.1772 11.5572H65.0815L65.5288 6.29344H66.6244L66.1772 11.5572ZM66.6556 5.92136H65.56L65.9858 0.911499H67.0814L66.6556 5.92136Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M66.9179 7.10229L66.8394 7.98157C66.8394 7.98157 68.6125 8.54221 70.0496 9.57514L70.1174 8.30407C70.1174 8.30407 68.7351 7.46688 66.9179 7.10229Z" fill="#878D99"/>
+          <path d="M18.6109 2.45544H20.399L20.5367 0.911499H21.4996L21.3687 2.45544H22.2916L22.2144 3.38904H21.2984C21.2971 3.42614 21.1233 8.19733 19.5523 9.59705C19.5557 9.60863 20.3043 10.2665 21.3355 10.5228C21.3298 10.5383 21.2711 11.5402 21.2701 11.557C21.2701 11.557 19.6594 10.9662 18.8677 10.2474C18.8658 10.2457 17.8956 11.0248 16.2398 11.5365C16.2329 11.5386 16.3103 10.5334 16.3111 10.5228C16.3111 10.5228 17.4254 10.2123 18.274 9.59705C18.2632 9.5887 16.8702 8.59753 17.5709 3.38904C17.5716 3.38391 16.5367 3.38904 16.5367 3.38904L16.6441 2.45544H17.6549L17.7769 0.911499H18.733L18.6109 2.45544ZM18.5299 3.38513C18.528 3.40474 18.4234 4.49538 18.3111 6.23376C18.1983 7.97967 18.9582 8.92482 18.9781 8.91833C19.7072 8.00063 19.9361 6.89353 20.024 6.4906C20.1114 6.08883 20.3261 3.41678 20.3287 3.38513H18.5299Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M27.1226 1.63428L26.4177 10.1104C26.3677 10.711 25.8657 11.1731 25.263 11.1731H22.056L22.8357 1.63428H27.1226ZM26.0509 2.61731H23.7454L23.1248 10.2689H24.9342C25.2083 10.2689 25.4365 10.0587 25.4591 9.7856L26.0509 2.61731Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M28.7849 1.11769C28.7849 1.11769 29.4951 2.61232 29.4951 3.58331C29.4951 3.5888 30.5535 3.58331 30.5535 3.58331C30.5535 3.58331 30.2945 1.93447 29.8546 1.11769H28.7849Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M28.7047 3.88517C28.7047 3.88517 29.4148 5.39607 29.4148 6.34241H30.4641C30.4641 6.34241 30.2193 4.57981 29.7727 3.88517C29.7702 3.88124 28.7047 3.88517 28.7047 3.88517Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M29.4627 6.74887C29.4627 6.74887 29.0063 9.32727 27.8965 11.4258C27.8982 11.4226 29.0432 11.4258 29.0432 11.4258C29.0432 11.4258 30.2691 8.60173 30.4643 6.74887H29.4627Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M34.5726 0.912964L34.4843 1.89476H31.2567L31.1841 2.7853H38.6032L38.6957 1.89476H35.5514L35.627 0.912964H34.5726Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M33.5003 2.7844C33.5003 2.7844 32.8129 3.94842 31.2327 5.11245C31.2358 5.11018 31.1841 5.93491 31.1841 5.93491H38.322L37.2998 3.49948H36.1435L36.7868 5.05887H32.7994C32.7994 5.05887 34.1026 3.87937 34.655 2.7844C34.6559 2.78253 33.5003 2.7844 33.5003 2.7844Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M31.9123 6.4281H32.8782L32.6352 9.17198C32.6352 9.17198 32.4674 11.205 30.3688 11.5372L30.4366 10.5954C30.4366 10.5954 31.5734 10.389 31.6843 9.17198C31.7456 8.50022 31.9123 6.4281 31.9123 6.4281Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M33.965 6.40222H34.9309L34.5374 11.3314H33.5608L33.965 6.40222Z" fill="#878D99"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M36.0491 6.4021H36.9951L36.7138 9.92136C36.7138 9.92136 36.6944 10.3516 37.3418 10.3516C37.9891 10.3516 38.2415 10.3516 38.2415 10.3516L38.1781 11.2558H36.8666C36.8666 11.2558 35.7156 11.1368 35.7648 10.0388C35.8141 8.94087 36.0491 6.4021 36.0491 6.4021Z" fill="#878D99"/>
+          </g>
+          <defs>
+          <clipPath id="clip0_5427_7552">
+          <rect width="72.0349" height="12" fill="white"/>
+          </clipPath>
+          </defs>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+</body>
+</html>

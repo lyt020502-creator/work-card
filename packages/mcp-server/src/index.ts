@@ -258,5 +258,37 @@ server.tool(
 
 // ── 启动 ───────────────────────────────────────────────────────
 
+const SHARED_DIR = path.join(LIB_ROOT, "components/work-card-examples/shared");
+
+// ⑨ 获取公共 CSS（用于内联到生成的 HTML，替代相对路径 <link>）
+server.tool(
+  "get_shared_css",
+  "获取工作卡公共样式表（work-card-base.css）的完整内容。通过 MCP 生成 HTML 时，必须调用此工具并将内容内联到 <style> 标签，禁止使用相对路径 <link>，因为工作区中不存在该文件。",
+  {},
+  async () => ({
+    content: [{ type: "text", text: readFile(path.join(SHARED_DIR, "work-card-base.css")) }],
+  })
+);
+
+// ⑩ 获取公共 JS（用于内联到生成的 HTML，仅含 Select 交互逻辑）
+server.tool(
+  "get_shared_js",
+  "获取工作卡公共交互脚本（work-card-base.js）的完整内容。仅在卡片包含 Select 下拉组件时才需调用，将内容内联到 <script> 标签末尾，禁止使用相对路径 <script src>。",
+  {},
+  async () => ({
+    content: [{ type: "text", text: readFile(path.join(SHARED_DIR, "work-card-base.js")) }],
+  })
+);
+
+// ⑪ 获取 Footer 固定模板 HTML
+server.tool(
+  "get_footer_html",
+  "获取工作卡品牌 Footer 的固定 HTML 模板（含 base64 品牌图标）。生成 HTML 时必须原样复制此内容到卡片底部，禁止修改结构或替换图片。",
+  {},
+  async () => ({
+    content: [{ type: "text", text: readFile(path.join(SHARED_DIR, "work-card-footer.html")) }],
+  })
+);
+
 const transport = new StdioServerTransport();
 await server.connect(transport);

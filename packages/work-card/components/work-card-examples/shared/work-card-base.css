@@ -17,6 +17,7 @@
   --color-red-4: #FF7066;
   --color-red-6: #D93936;
   /* 绿色 */
+  --color-green-0: #E8F9ED;
   --color-green-5: #1BB23E;
   /* 橙色 */
   --color-orange-0: #FFF5F2;
@@ -33,6 +34,13 @@
   --color-other-2: #F4F5F7;
   --color-other-3: #F2F4F7;
   --color-other-4: #F7F8FA;
+
+  /* 语义色背景（浅色，tag/状态块背景用） */
+  --color-bg-brand: var(--color-brandblue-0);   /* #F2F8FF */
+  --color-bg-success: var(--color-green-0);     /* #E8F9ED */
+  --color-bg-error: var(--color-red-0);         /* #FFF2F2 */
+  --color-bg-warning: var(--color-orange-0);    /* #FFF5F2 */
+  --color-bg-neutral: var(--color-other-3);     /* #F2F4F7 */
 
   /* 语义色 */
   --brand-base: var(--color-brandblue-5);
@@ -512,6 +520,55 @@ body {
 .wc-tip__link {
   color: var(--brand-base);
   cursor: pointer;
+}
+
+/* ── 标签 (.wc-tag--*) ──
+   使用场景：在工作卡内展示状态标签（审批状态、工单状态等）
+   必须配合 .wc-tag-row 容器使用，禁止在 <p> 内 inline 混排 ── */
+.wc-tag {
+  display: inline-flex;
+  align-items: center;
+  height: var(--comp-height-xs);       /* 18px */
+  padding: 0 var(--space-intimate);    /* 0 4px */
+  border-radius: var(--radius-xs);     /* 2px */
+  font-size: var(--font-size-xs);      /* 12px */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-height-xs);  /* 18px */
+  white-space: nowrap;
+}
+/* 待处理 — 品牌蓝 */
+.wc-tag--pending {
+  color: var(--brand-base);
+  background: var(--color-bg-brand);
+}
+/* 已通过 — 绿色 */
+.wc-tag--approved {
+  color: var(--status-success);
+  background: var(--color-bg-success);
+}
+/* 已拒绝 — 红色 */
+.wc-tag--rejected {
+  color: var(--status-error);
+  background: var(--color-bg-error);
+}
+/* 已失效 — 中性灰 */
+.wc-tag--expired {
+  color: var(--status-neutral);
+  background: var(--color-bg-neutral);
+}
+/* 警告 — 橙色 */
+.wc-tag--warning {
+  color: var(--status-warning);
+  background: var(--color-bg-warning);
+}
+
+/* ── 标签与文字混排容器 (.wc-tag-row) ──
+   凡标签（tag）与文字同行出现时，必须使用此容器包裹
+   禁止在 <p> 或任何 inline 容器内直接放置 .wc-tag--* ── */
+.wc-tag-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-intimate);          /* 4px */
 }
 
 /* ── WorkCardFooter 底部品牌区（固定模板） ── */

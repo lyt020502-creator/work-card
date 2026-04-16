@@ -49,7 +49,7 @@ function listHtmlExamples(): Array<{ file: string; type: string; scene: string }
 
 const server = new McpServer({
   name: "work-card",
-  version: "2.2.0",
+  version: "2.3.0",
 });
 
 // ① 获取工作卡组件完整 API
@@ -179,7 +179,7 @@ server.tool(
     const indexContent = readFile(EXAMPLES_MD);
 
     // 从 EXAMPLES.md 表格中解析每一行案例的完整描述（含中文场景、关键组件等）
-    type ExampleRow = { file: string; type: string; fullText: string };
+    type ExampleRow = { file: string; type: string; components: string[]; fullText: string };
     const rows: ExampleRow[] = [];
     for (const line of indexContent.split("\n")) {
       // 匹配表格数据行：以 | ` 开头
@@ -187,10 +187,16 @@ server.tool(
       if (!match) continue;
       const file = match[1].trim();
       const rest = match[2];
-      // 提取类型字段（第一个 | 分隔的列）
+      // 提取各列：类型 | 场景 | 卡头图标 | 卡头色 | 关键组件
       const cols = rest.split("|").map((c) => c.trim());
       const type = cols[0] ?? "";
-      rows.push({ file, type, fullText: line });
+      // 最后一列为关键组件，按逗号/顿号分割
+      const compRaw = cols[cols.length - 1] ?? "";
+      const components = compRaw
+        .split(/[,，、\s]+/)
+        .map((s) => s.replace(/`/g, "").trim())
+        .filter(Boolean);
+      rows.push({ file, type, components, fullText: line });
     }
 
     // 关键词提取：拆分中文词、英文词，过滤单字
@@ -233,7 +239,11 @@ server.tool(
     const fallback = top.length === 0 ? scored.slice(0, 1) : top;
 
     const lines = fallback.map(
-      (e) => `- 文件：${e.file}（类型：${e.type}，匹配分：${e.score}）\n  → 原始描述行：${e.fullText.trim()}`
+      (e) => [
+        `- 文件：${e.file}（类型：${e.type}，匹配分：${e.score}）`,
+        `  → 关键组件：${e.components.length > 0 ? e.components.join(", ") : "无"}`,
+        `  → 原始描述行：${e.fullText.trim()}`,
+      ].join("\n")
     );
 
     return {
@@ -312,6 +322,7 @@ HTML 用法：\`<div class="work-card-body work-card-body--intimate">\`
 - **禁止**自定义卡头图标 SVG，必须使用 5 个规范图标（\`IconTodo\` / \`IconTask\` / \`IconSchedule\` / \`IconHot\` / \`IconNotice\`）
 - **禁止**用 \`<div>\` 手写 flex 布局放置按钮组，必须使用 \`WorkCardActions\`
 - 按钮**必须**使用 \`Button\` 组件的 \`outline-primary\`、\`outline\` 或 \`outline-destructive\` 变体
+- **禁止**在 \`<p>\` 或任何 inline 容器内直接放置 \`.wc-tag--*\`，标签与文字混排**必须**使用 \`.wc-tag-row\` flex 容器包裹
 
 ### 1.5 按钮搭配规则
 
@@ -336,6 +347,16 @@ HTML 用法：\`<div class="work-card-body work-card-body--intimate">\`
 
 ### 组件
 - **禁止**引入 shadcn、antd、MUI、Bootstrap 等任何外部 UI 库
+
+### 标签（Tag）
+- 标准变体（通过 \`get_shared_css\` 内联后可用）：
+  - \`.wc-tag--pending\`（待处理，蓝色）
+  - \`.wc-tag--approved\`（已通过，绿色）
+  - \`.wc-tag--rejected\`（已拒绝，红色）
+  - \`.wc-tag--expired\`（已失效，灰色）
+  - \`.wc-tag--warning\`（警告，橙色）
+- **禁止**硬编码颜色，**禁止**自造 tag 样式类，**必须**使用以上变体
+- 标签与文字同行时，**必须**用 \`.wc-tag-row\` 容器包裹，禁止 inline 混排
 
 ---
 

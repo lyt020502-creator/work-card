@@ -639,6 +639,12 @@ WorkCardActions.displayName = "WorkCardActions";
 //       ├ WorkCardAttrLabel — 字段名（自动追加中文冒号"："）
 //       └ WorkCardAttrValue — 字段值（最多 2 行，溢出省略）
 //
+// ⚠️ 强制复用规则：
+//   卡片内所有"标签：值"键值对场景（包括嵌套子卡片内的详细信息）
+//   **必须**使用本组件组合，**禁止**自造 flex 布局类名（如 xxx-info-item）。
+//   HTML 对应类名：wc-attr-list / wc-attr-item / wc-attr-label / wc-attr-value
+//   Grid auto 列保证同一列表内所有 label 等宽对齐，自造布局会破坏此约束。
+//
 // 设计稿参数：
 //   布局            CSS Grid（grid-template-columns: auto 1fr）
 //   列表行间距      2px（gap-y-0.5）

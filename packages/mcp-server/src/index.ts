@@ -49,7 +49,7 @@ function listHtmlExamples(): Array<{ file: string; type: string; scene: string }
 
 const server = new McpServer({
   name: "work-card",
-  version: "1.0.0",
+  version: "2.2.0",
 });
 
 // ① 获取工作卡组件完整 API
@@ -256,9 +256,142 @@ server.tool(
   }
 );
 
-// ── 启动 ───────────────────────────────────────────────────────
-
 const SHARED_DIR = path.join(LIB_ROOT, "components/work-card-examples/shared");
+
+// ⑫ 获取工作卡生成规范（开发规则 + MCP 工具调用流程）
+server.tool(
+  "get_generation_rules",
+  "【首次生成工作卡前必须调用】获取完整的工作卡开发规范和 MCP 工具调用流程。包含：组件结构约束、样式禁令、HTML 输出规定、图标规范、强制工具调用顺序等。AI 在生成任何工作卡代码之前，必须先调用此工具获取规范并严格遵守。",
+  {},
+  async () => {
+    const devRules = `# 工作卡开发规范
+
+生成任何**工作卡 UI 代码**时，必须**严格遵守**以下约束。不得引入外部 CSS 框架、组件库、自定义硬编码值，也不得自造卡片结构。
+
+> **核心参考文件**：通过 \`get_work_card_api\` 工具获取。组件 API（variant 选项、props、默认值）、卡头颜色语义、排版层级、内部表单/按钮约束均在该文件的 **cva 定义及注释** 中有权威说明。生成代码前**必须先调用该工具**，本规范仅补充未涵盖的使用规则和禁令。
+
+---
+
+## 1. 组件结构与使用
+
+### 1.1 固定三层结构
+
+每张工作卡**必须**包含以下三层，顺序不可调换：
+
+\`\`\`tsx
+<WorkCard>
+  <WorkCardHeader icon={<IconTodo />} label="状态文字" color="blue" />
+  <WorkCardBody>
+    {/* 业务内容区 */}
+  </WorkCardBody>
+  <WorkCardFooter />
+</WorkCard>
+\`\`\`
+
+### 1.2 WorkCardBody spacing 属性
+
+\`WorkCardBody\` 支持 \`spacing\` 属性控制子元素间距：
+
+- \`default\`（默认）— 12px（\`--space-content\`），最常用
+- \`tight\` — 8px（\`--space-tight\`），适中
+- \`intimate\` — 4px（\`--space-intimate\`），紧凑的纯文字/链接场景
+
+TSX 用法：\`<WorkCardBody spacing="intimate">\`
+
+HTML 用法：\`<div class="work-card-body work-card-body--intimate">\`
+
+### 1.3 导入
+
+所有工作卡组件和卡头图标均从 \`components/ui/work-card\` 导入。具体可用组件清单参见该文件的 \`export\`。
+
+### 1.4 禁止行为
+
+- **禁止**用 \`<div>\` 自行搭建卡片容器、卡头、品牌底部
+- **禁止**手写键值对布局，必须使用 \`WorkCardAttrList\` 系列组件
+- **禁止**为"标签+值"的键值对场景自造 flex 布局类名。凡键值对列表，HTML 中**必须**使用 \`wc-attr-list\` + \`wc-attr-item\` + \`wc-attr-label\` + \`wc-attr-value\`，TSX 中**必须**使用 \`WorkCardAttrList\` + \`WorkCardAttrItem\` + \`WorkCardAttrLabel\` + \`WorkCardAttrValue\`
+- **禁止**自定义卡头图标 SVG，必须使用 5 个规范图标（\`IconTodo\` / \`IconTask\` / \`IconSchedule\` / \`IconHot\` / \`IconNotice\`）
+- **禁止**用 \`<div>\` 手写 flex 布局放置按钮组，必须使用 \`WorkCardActions\`
+- 按钮**必须**使用 \`Button\` 组件的 \`outline-primary\`、\`outline\` 或 \`outline-destructive\` 变体
+
+### 1.5 按钮搭配规则
+
+- 三种变体：\`outline-primary\`（主要）、\`outline\`（次要）、\`outline-destructive\`（负向）
+- **主要和负向各最多 1 个，次要不限**
+- 右侧放核心操作（用户视线终点）
+
+---
+
+## 2. 样式禁令
+
+### 颜色
+- **禁止**硬编码颜色值（如 \`#3377FF\`、\`rgba(...)\`），**必须**使用 \`get_design_tokens\` 返回的语义变量
+
+### 间距 / 圆角 / 阴影
+- **禁止**使用魔法数字（如 \`padding: 10px\`），**必须**使用 token 变量（\`--space-*\`、\`--corner-*\`、\`--shadow-*\`）
+
+### 排版
+- 工作卡内容区**仅允许** 4 级字号（\`wc-title1\` / \`wc-title2\` / \`wc-text\` / \`wc-caption\`）
+- **禁止**使用 \`text-[14px]\`、\`text-base\`、\`text-sm\` 等未定义字号
+- **禁止**使用 \`font-semibold\`（600）或 \`font-bold\`（700）等未定义字重
+
+### 组件
+- **禁止**引入 shadcn、antd、MUI、Bootstrap 等任何外部 UI 库
+
+---
+
+## 3. HTML 输出特别规定
+
+- 不得使用 Tailwind CDN 或任何 CDN
+- **禁止**使用 \`style=""\` 内联样式覆盖组件变体属性
+- 卡头颜色变体通过 CSS 类切换：默认 blue 无需额外类，其他颜色使用 \`work-card-header--red\` / \`--green\` / \`--orange\` / \`--gray\`
+- Footer **必须**使用 \`get_footer_html\` 返回的固定模板，**禁止**修改
+
+---
+
+## 4. 图标
+
+- **禁止**自绘 SVG 路径
+- **查找图标**：调用 \`search_icons\` 或 \`get_icon_list\`
+- **HTML demo**：将 SVG 路径数据内联，硬编码颜色改为 \`fill="currentColor"\` / \`stroke="currentColor"\`
+`;
+
+    const mcpRules = `# MCP 工具调用流程（强制）
+
+收到工作卡生成需求后，**必须严格按以下顺序调用工具**：
+
+Step 1 → \`recommend_example\`：传入用户需求描述，返回 1-2 个最匹配的案例文件路径
+Step 2 → \`get_example_code\`：传入 Step 1 返回的文件路径，获取完整 HTML 案例源码
+Step 3 → \`get_shared_css\`：获取公共样式，内联到 \`<style>\` 标签
+Step 4 →（按需）\`get_shared_js\`：仅当卡片包含 Select 下拉组件时调用，内联到 \`<script>\` 标签
+Step 5 → \`get_footer_html\`：获取 Footer 固定 HTML 模板，原样复制到卡片底部
+Step 6 → 以案例源码为模板生成新卡片，复用骨架，替换业务内容
+
+**HTML 资源引用规则：**
+- 公共样式：禁止 \`<link>\` 引用，必须 \`<style>\` 内联 \`get_shared_css\` 返回的内容
+- 公共 JS：禁止 \`<script src>\` 引用，必须 \`<script>\` 内联 \`get_shared_js\` 返回的内容
+- Footer：禁止自行编写，必须原样复制 \`get_footer_html\` 返回的 HTML
+
+**禁止行为：**
+- 禁止跳过 \`recommend_example\`，直接遍历所有案例
+- 禁止不查工具、凭记忆生成组件结构或样式值
+
+**按需工具调用：**
+- 确认组件 Props / 变体 → \`get_work_card_api\`
+- 查找图标 → \`search_icons\` 或 \`get_icon_list\`
+- 确认颜色 / 间距变量名 → \`get_design_tokens\`
+- 查看所有案例列表 → \`get_examples_index\`
+`;
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: devRules + "\n---\n\n" + mcpRules,
+        },
+      ],
+    };
+  }
+);
 
 // ⑨ 获取公共 CSS（用于内联到生成的 HTML，替代相对路径 <link>）
 server.tool(
